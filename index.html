@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ficha Técnica de Produto</title>
+    <!-- Tailwind CSS para um design moderno e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ícones Heroicons para a interface -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/heroicons.min.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados e fonte Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        /* Efeito de transição suave para os cards de produto */
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Botão para abrir a lista de todos os produtos -->
+    <button id="viewAllBtn" title="Ver todos os produtos" class="fixed top-4 right-4 z-40 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <!-- Título da Página -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-700">Sistema de Ficha Técnica de Produto</h1>
+            <p class="text-gray-500 mt-2">Cadastre e pesquise produtos e suas matérias-primas.</p>
+        </header>
+
+        <!-- Seção de Cadastro de Novo Produto -->
+        <div class="bg-white p-6 rounded-xl shadow-lg mb-8 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Adicionar Novo Produto</h2>
+            <form id="addProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label for="productName" class="block text-sm font-medium text-gray-700">Nome do Produto</label>
+                    <input type="text" id="productName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="productRef" class="block text-sm font-medium text-gray-700">Referência</label>
+                    <input type="text" id="productRef" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="productChar" class="block text-sm font-medium text-gray-700">Característica</label>
+                    <input type="text" id="productChar" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="productImage" class="block text-sm font-medium text-gray-700">Foto do Produto</label>
+                    <input type="file" id="productImage" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="rawMaterials" class="block text-sm font-medium text-gray-700">Matérias-Primas (separadas por vírgula)</label>
+                    <textarea id="rawMaterials" rows="3" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                <div class="md:col-span-2 text-right">
+                    <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Salvar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Seção de Pesquisa -->
+        <div class="bg-white p-4 rounded-xl shadow-lg mb-8 max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-4">
+            <div class="w-full md:w-1/3">
+                 <label for="searchType" class="sr-only">Pesquisar por</label>
+                 <select id="searchType" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="name">Nome</option>
+                    <option value="ref">Referência</option>
+                    <option value="char">Característica</option>
+                </select>
+            </div>
+            <div class="relative w-full md:w-2/3">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" id="searchInput" placeholder="Digite para pesquisar..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+        </div>
+        
+        <!-- Mensagem de Nenhum Resultado -->
+        <div id="noResults" class="hidden text-center text-gray-500 py-10">
+            <h3 class="text-xl font-semibold">Nenhum produto encontrado</h3>
+            <p>Tente ajustar seus termos de pesquisa.</p>
+        </div>
+
+
+        <!-- Lista de Produtos Cadastrados -->
+        <div id="productList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Os cards de produto serão inseridos aqui pelo JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-xl bg-white">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-2xl font-semibold">Editar Produto</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="mt-4">
+                <form id="editProductForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="hidden" id="editProductId">
+                    <div class="md:col-span-2">
+                        <label for="editProductName" class="block text-sm font-medium text-gray-700">Nome do Produto</label>
+                        <input type="text" id="editProductName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="editProductRef" class="block text-sm font-medium text-gray-700">Referência</label>
+                        <input type="text" id="editProductRef" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="editProductChar" class="block text-sm font-medium text-gray-700">Característica</label>
+                        <input type="text" id="editProductChar" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="editProductImage" class="block text-sm font-medium text-gray-700">Nova Foto do Produto (opcional)</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            <img id="editImagePreview" src="" alt="Pré-visualização" class="w-16 h-16 object-cover rounded-md bg-gray-200">
+                            <input type="file" id="editProductImage" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="editRawMaterials" class="block text-sm font-medium text-gray-700">Matérias-Primas (separadas por vírgula)</label>
+                        <textarea id="editRawMaterials" rows="3" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div class="md:col-span-2 text-right">
+                        <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-6 border w-full max-w-md shadow-lg rounded-xl bg-white">
+            <h3 class="text-xl font-bold text-center">Confirmar Exclusão</h3>
+            <p class="text-gray-600 text-center my-4">Você tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.</p>
+            <div class="flex justify-center gap-4 mt-6">
+                <button id="cancelDeleteBtn" class="py-2 px-6 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancelar</button>
+                <button id="confirmDeleteBtn" class="py-2 px-6 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Todos os Produtos -->
+    <div id="allProductsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <div class="relative mx-auto p-6 border w-full max-w-3xl shadow-lg rounded-xl bg-white flex flex-col" style="max-height: 90vh;">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-2xl font-semibold">Todos os Produtos Cadastrados</h3>
+                <button id="closeAllProductsModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="mt-4 overflow-y-auto" id="allProductsListContainer">
+                <!-- A lista de produtos será inserida aqui -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- ELEMENTOS DO DOM ---
+        const addProductForm = document.getElementById('addProductForm');
+        const productList = document.getElementById('productList');
+        const searchInput = document.getElementById('searchInput');
+        const searchType = document.getElementById('searchType');
+        const noResults = document.getElementById('noResults');
+        const viewAllBtn = document.getElementById('viewAllBtn');
+        
+        // Modais
+        const editModal = document.getElementById('editModal');
+        const editProductForm = document.getElementById('editProductForm');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const deleteModal = document.getElementById('deleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const allProductsModal = document.getElementById('allProductsModal');
+        const closeAllProductsModalBtn = document.getElementById('closeAllProductsModalBtn');
+        const allProductsListContainer = document.getElementById('allProductsListContainer');
+
+        let productIdToDelete = null;
+
+        // --- BANCO DE DADOS (localStorage) ---
+        const DB_KEY = 'productsDB';
+        let products = [];
+
+        function getProductsFromDB() {
+            const dbString = localStorage.getItem(DB_KEY);
+            // Dados iniciais com imagens de placeholder
+            const initialData = [
+                { id: 1, name: 'Bolo de Chocolate', ref: 'BC-001', char: 'Sobremesa clássica', image: 'https://placehold.co/600x400/774b2b/FFFFFF?text=Bolo+de+Chocolate', rawMaterials: ['Farinha de Trigo', 'Açúcar', 'Chocolate em Pó', 'Ovos', 'Leite', 'Fermento'] },
+                { id: 2, name: 'Pão Francês', ref: 'PF-001', char: 'Pão tradicional', image: 'https://placehold.co/600x400/c2a46c/FFFFFF?text=Pão+Francês', rawMaterials: ['Farinha de Trigo', 'Água', 'Sal', 'Fermento Biológico'] },
+                { id: 3, name: 'Camiseta de Algodão Branca', ref: 'CM-BR-01', char: 'Vestuário básico', image: 'https://placehold.co/600x400/e0e0e0/333333?text=Camiseta', rawMaterials: ['Tecido de Algodão', 'Linha de Costura Branca', 'Etiqueta de Composição'] }
+            ];
+            if (!dbString) {
+                saveProductsToDB(initialData);
+                return initialData;
+            }
+            return JSON.parse(dbString);
+        }
+
+        function saveProductsToDB(productsArray) {
+            localStorage.setItem(DB_KEY, JSON.stringify(productsArray));
+        }
+        
+        /**
+         * Converte um arquivo de imagem para o formato Base64.
+         * @param {File} file - O arquivo de imagem a ser convertido.
+         * @returns {Promise<string>} Uma promessa que resolve com a string Base64 da imagem.
+         */
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // --- FUNÇÕES ---
+
+        function renderProducts(productsToRender) {
+            productList.innerHTML = '';
+            noResults.classList.toggle('hidden', productsToRender.length > 0);
+
+            productsToRender.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col relative';
+                const rawMaterialsHTML = product.rawMaterials.map(material => `<li class="text-gray-600">${material}</li>`).join('');
+                card.innerHTML = `
+                    <div class="absolute top-3 right-3 flex gap-2 z-10">
+                        <button data-id="${product.id}" class="edit-btn bg-white p-2 rounded-full shadow hover:bg-gray-100 text-gray-600 hover:text-indigo-600 transition-colors">
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                        </button>
+                        <button data-id="${product.id}" class="delete-btn bg-white p-2 rounded-full shadow hover:bg-gray-100 text-gray-600 hover:text-red-600 transition-colors">
+                            <svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <img src="${product.image}" alt="Foto de ${product.name}" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/FFFFFF?text=Imagem+Inválida'">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div>
+                            <p class="text-sm text-indigo-500 font-semibold">${product.char}</p>
+                            <h3 class="text-xl font-bold mt-1">${product.name}</h3>
+                            <p class="text-xs text-gray-500 mb-4">Ref: ${product.ref}</p>
+                        </div>
+                        <div class="mt-auto">
+                            <h4 class="font-semibold text-md text-gray-700">Matérias-Primas:</h4>
+                            <ul class="list-disc list-inside mt-2 space-y-1">${rawMaterialsHTML}</ul>
+                        </div>
+                    </div>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        async function handleAddProduct(event) {
+            event.preventDefault(); 
+            const name = document.getElementById('productName').value;
+            const ref = document.getElementById('productRef').value;
+            const char = document.getElementById('productChar').value;
+            const imageFile = document.getElementById('productImage').files[0];
+            const rawMaterials = document.getElementById('rawMaterials').value.split(',').map(item => item.trim()).filter(Boolean);
+            
+            let image = `https://placehold.co/600x400/cccccc/FFFFFF?text=${name.replace(/\s/g,'+')}`;
+            if (imageFile) {
+                image = await fileToBase64(imageFile);
+            }
+
+            const newProduct = { id: Date.now(), name, ref, char, image, rawMaterials };
+            products.unshift(newProduct);
+            saveProductsToDB(products);
+            handleSearch();
+            addProductForm.reset();
+        }
+
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const criteria = searchType.value;
+            const filteredProducts = products.filter(product => (product[criteria] || product.name).toLowerCase().includes(searchTerm));
+            renderProducts(filteredProducts);
+        }
+
+        function openEditModal(product) {
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductRef').value = product.ref;
+            document.getElementById('editProductChar').value = product.char;
+            document.getElementById('editImagePreview').src = product.image;
+            document.getElementById('editProductImage').value = ''; // Limpa o seletor de arquivo
+            document.getElementById('editRawMaterials').value = product.rawMaterials.join(', ');
+            editModal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
+
+        async function handleUpdateProduct(event) {
+            event.preventDefault();
+            const id = Number(document.getElementById('editProductId').value);
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex === -1) return;
+
+            const name = document.getElementById('editProductName').value;
+            const ref = document.getElementById('editProductRef').value;
+            const char = document.getElementById('editProductChar').value;
+            const imageFile = document.getElementById('editProductImage').files[0];
+            const rawMaterials = document.getElementById('editRawMaterials').value.split(',').map(item => item.trim()).filter(Boolean);
+            
+            let image = products[productIndex].image; // Mantém a imagem antiga por padrão
+            if (imageFile) {
+                image = await fileToBase64(imageFile); // Atualiza se um novo arquivo for selecionado
+            }
+
+            products[productIndex] = { id, name, ref, char, image, rawMaterials };
+            saveProductsToDB(products);
+            closeEditModal();
+            handleSearch();
+        }
+
+        function openDeleteModal(id) {
+            productIdToDelete = id;
+            deleteModal.classList.remove('hidden');
+        }
+        
+        function closeDeleteModal() {
+            productIdToDelete = null;
+            deleteModal.classList.add('hidden');
+        }
+
+        function executeDelete() {
+            if (!productIdToDelete) return;
+            products = products.filter(p => p.id !== productIdToDelete);
+            saveProductsToDB(products);
+            closeDeleteModal();
+            handleSearch();
+        }
+
+        function renderAllProductsList() {
+            allProductsListContainer.innerHTML = '';
+            if (products.length === 0) {
+                allProductsListContainer.innerHTML = '<p class="text-gray-500 text-center">Nenhum produto cadastrado.</p>';
+                return;
+            }
+            const list = document.createElement('ul');
+            list.className = 'space-y-3';
+            products.forEach(product => {
+                const item = document.createElement('li');
+                item.className = 'p-4 bg-gray-50 rounded-lg border flex items-start gap-4';
+                item.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded-md bg-gray-200" onerror="this.src='https://placehold.co/100x100/cccccc/FFFFFF?text=Img'">
+                    <div>
+                        <p class="font-bold text-lg text-gray-800">${product.name}</p>
+                        <p class="text-sm text-gray-600"><strong>Ref:</strong> ${product.ref} | <strong>Característica:</strong> ${product.char}</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Matérias-primas:</strong> ${product.rawMaterials.join(', ')}</p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            allProductsListContainer.appendChild(list);
+        }
+
+        function openAllProductsModal() {
+            renderAllProductsList();
+            allProductsModal.classList.remove('hidden');
+        }
+
+        function closeAllProductsModal() {
+            allProductsModal.classList.add('hidden');
+        }
+
+        // --- EVENT LISTENERS ---
+        addProductForm.addEventListener('submit', handleAddProduct);
+        searchInput.addEventListener('keyup', handleSearch);
+        searchType.addEventListener('change', handleSearch);
+        editProductForm.addEventListener('submit', handleUpdateProduct);
+        closeModalBtn.addEventListener('click', closeEditModal);
+        editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal() });
+        
+        cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+        confirmDeleteBtn.addEventListener('click', executeDelete);
+        deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal() });
+
+        viewAllBtn.addEventListener('click', openAllProductsModal);
+        closeAllProductsModalBtn.addEventListener('click', closeAllProductsModal);
+        allProductsModal.addEventListener('click', e => { if (e.target === allProductsModal) closeAllProductsModal() });
+
+        productList.addEventListener('click', (event) => {
+            const targetButton = event.target.closest('button');
+            if (!targetButton) return;
+            const id = Number(targetButton.dataset.id);
+            if (targetButton.classList.contains('edit-btn')) {
+                const productToEdit = products.find(p => p.id === id);
+                if (productToEdit) openEditModal(productToEdit);
+            } else if (targetButton.classList.contains('delete-btn')) {
+                openDeleteModal(id);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            products = getProductsFromDB();
+            renderProducts(products);
+        });
+    </script>
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBEZwzN3Z37EVoIX8WbcUg03PltWIpFof0",
+    authDomain: "sistemaftp3.firebaseapp.com",
+    projectId: "sistemaftp3",
+    storageBucket: "sistemaftp3.firebasestorage.app",
+    messagingSenderId: "706827479169",
+    appId: "1:706827479169:web:ebd0bab92fd7216d978580"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+</html>
+
